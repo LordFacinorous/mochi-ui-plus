@@ -16,7 +16,9 @@ function createWindow() {
 }
 
 ipcMain.on('cwd-changed', (event, cwd) => {
-  mainWindow.webContents.send('update-filebrowser', cwd);
+  if (mainWindow) {
+    mainWindow.webContents.send('update-filebrowser', cwd);
+  }
 });
 
 app.whenReady().then(createWindow);

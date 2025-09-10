@@ -1,6 +1,6 @@
 const { Terminal } = require('xterm');
 const pty = require('node-pty');
-const os = require('os');
+const { exec } = require('child_process');
 
 const shell = process.env.SHELL || 'bash';
 const term = new Terminal({ cursorBlink: true });
@@ -18,8 +18,9 @@ const ptyProcess = pty.spawn(shell, [], {
 
 ptyProcess.onData(data => {
   term.write(data);
+  // Check for prompt return to update CWD
   if (data.includes('\n') || data.includes('\r')) {
-    require('child_process').exec('pwd', { cwd: currentCwd }, (err, stdout) => {
+    exec('pwd', { cwd: currentCwd }, (err, stdout) => {
       if (!err) {
         currentCwd = stdout.trim();
         window.electronAPI.cwdChanged(currentCwd);
